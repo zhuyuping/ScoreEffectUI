@@ -17,4 +17,9 @@ Pod::Spec.new do |spec|
   spec.resource_bundles = {
     'ScoreEffectUIBundle' => ['Resources/*.xcassets']
   }
+  
+  spec.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = "Tests/**/*.{swift}"
+    test_spec.frameworks = 'UIKit','Foundation'
+  end
 end
