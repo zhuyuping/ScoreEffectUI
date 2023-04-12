@@ -10,8 +10,8 @@ import UIKit
 /// 激励视图
 public class IncentiveView: UIView {
     private var itemViews: [IncentiveItemView]!
-    private var combo = 0
-    private var lastName = ""
+    private var combo = 1
+    var lastType = IncentiveType.none
     private let logTag = "IncentiveView"
     
     public override init(frame: CGRect) {
@@ -42,54 +42,52 @@ public class IncentiveView: UIView {
             return
         }
         
-        var tempName: String?
+        let item = calculatedItem(score: score)
+        if item.type == .none { return }
         
-        if score >= 60, score < 75 {
-            tempName = "fair"
-        }
-        else if score >= 75, score < 90 {
-            tempName = "good"
-        }
-        else if score >= 90, score <= 100 {
-            tempName = "excellent"
-        }
-        else {
-            combo = 0
-            return
-        }
-        
-        guard let name = tempName else { return }
-        guard let image =  Bundle.currentBundle.image(name: name) else {
-            return
-        }
-        
-        if lastName == name {
-            if combo == 0 {
-                combo += 2
-            }
-            else {
-                combo += 1
-            }
-        }
-        else {
-            lastName = name
-            combo = 0
-        }
-        
-        guard let view = getView() else {
+        guard let view = getView(), let image =  Bundle.currentBundle.image(name: item.type.imageName) else {
             return
         }
         bringSubviewToFront(view)
-        view.showAnimation(image: image, combo: combo)
+        view.showAnimation(image: image, combo: item.num)
     }
     
     public func reset() {
-        combo = 0
-        lastName = ""
+        lastType = .none
+        combo = 1
     }
     
     private func getView() -> IncentiveItemView? {
         return itemViews.first(where: { $0.canUse })
+    }
+    
+    /// 通过输入的score，计算得出的Item
+    func calculatedItem(score: Int) -> Item {
+        var type = IncentiveType.none
+        
+        if score >= 60, score < 75 {
+            type = .fair
+        }
+        else if score >= 75, score < 90 {
+            type = .good
+        }
+        else if score >= 90, score <= 100 {
+            type = .excellent
+        }
+        else {}
+        
+        if type != .none {
+            if lastType == type { /** add **/
+                combo += 1
+            }
+            else { /** reset **/
+                combo = 1
+            }
+        }
+        
+        lastType = type
+        
+        return Item(type: type, num: combo)
     }
 }
 
@@ -125,7 +123,7 @@ class IncentiveItemView: UIView, CAAnimationDelegate {
     fileprivate func showAnimation(image: UIImage, combo: Int) {
         canUse = false
         comboLabel.text = "×\(combo)"
-        comboLabel.isHidden = combo == 0
+        comboLabel.isHidden = combo < 2
         imageView.image = image
         isHidden = false
         
@@ -182,5 +180,37 @@ class IncentiveLabel: UILabel {
         super.drawText(in: rect)
         
         shadowOffset = offset
+    }
+}
+
+
+extension IncentiveView { /** Info **/
+    enum IncentiveType {
+        /// [60, 75)
+        case fair
+        /// [75, 90)
+        case good
+        /// [90, 100]
+        case excellent
+        /// [0, 60)
+        case none
+        
+        var imageName: String {
+            switch self {
+            case .fair:
+                return "fair"
+            case .good:
+                return "good"
+            case .excellent:
+                return "excellent"
+            default:
+                return ""
+            }
+        }
+    }
+    
+    struct Item {
+        let type: IncentiveType
+        let num: Int
     }
 }

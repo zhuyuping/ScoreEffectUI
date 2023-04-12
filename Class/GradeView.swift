@@ -39,10 +39,15 @@ public class GradeView: UIView {
         }
     }
     
+    /// 设置标题
     @objc public func setTitle(title: String) {
         titleLabel.text = title
     }
-    
+
+    /// 设置分数
+    /// - Parameters:
+    ///   - cumulativeScore: 累计分数
+    ///   - totalScore: 歌曲预期总分
     @objc public func setScore(cumulativeScore: Int, totalScore: Int) {
         setupIfNeed()
         
