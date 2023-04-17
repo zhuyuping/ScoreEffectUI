@@ -75,7 +75,9 @@ public class IncentiveView: UIView {
             type = .excellent
         }
         else {}
-        
+        if score == 16 {
+            print("")
+        }
         if type != .none {
             if lastType == type { /** add **/
                 combo += 1
@@ -83,6 +85,9 @@ public class IncentiveView: UIView {
             else { /** reset **/
                 combo = 1
             }
+        }
+        else { /** reset **/
+            combo = 1
         }
         
         lastType = type
