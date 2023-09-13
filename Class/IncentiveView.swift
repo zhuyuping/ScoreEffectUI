@@ -52,7 +52,7 @@ public class IncentiveView: UIView {
         view.showAnimation(image: image, combo: item.num)
     }
     
-    public func reset() {
+    @objc public func reset() {
         lastType = .none
         combo = 1
     }
