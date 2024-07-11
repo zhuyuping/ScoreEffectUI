@@ -40,21 +40,27 @@ public class GradeView: UIView {
     }
     
     /// 设置标题
-    @objc public func setTitle(title: String) {
+    /// - Parameters:
+    ///   - customCumulativeScoreText: 累计总分的显示文本，如果为`nil`，则使用默认样式。
+    @objc public func setTitle(title: String, customCumulativeScoreText: String? = nil) {
         titleLabel.text = title
+        scoreLabel.text = (customCumulativeScoreText != nil) ? customCumulativeScoreText : "0分"
     }
 
     /// 设置分数
     /// - Parameters:
     ///   - cumulativeScore: 累计分数
     ///   - totalScore: 歌曲预期总分
-    @objc public func setScore(cumulativeScore: Int, totalScore: Int) {
+    ///   - customCumulativeScoreText: 累计总分的显示文本，如果为`nil`，则使用默认样式。
+    @objc public func setScore(cumulativeScore: Int,
+                               totalScore: Int,
+                               customCumulativeScoreText: String? = nil) {
         setupIfNeed()
         
         if totalScore > 0 {
             let progress = Float(cumulativeScore) / Float(totalScore)
             progressView.setProgress(progress: progress)
-            scoreLabel.text = "\(cumulativeScore)分"
+            scoreLabel.text = (customCumulativeScoreText != nil) ? customCumulativeScoreText : "\(cumulativeScore)分"
             if let gradeIndex = totalGradeIndex(cumulativeScore: cumulativeScore,
                                                 totalScore: totalScore,
                                                 gradeScores: gradeScores) {
@@ -71,8 +77,11 @@ public class GradeView: UIView {
         }
     }
     
-    @objc public func reset() {
-        scoreLabel.text = "0分"
+    /// 重置分数
+    /// - Parameters:
+    ///   - customCumulativeScoreText: 累计总分的显示文本，如果为`nil`，则使用默认样式。
+    @objc public func reset(customCumulativeScoreText: String? = nil) {
+        scoreLabel.text = (customCumulativeScoreText != nil) ? customCumulativeScoreText : "0分"
         setGradeImage(image: nil)
         progressView.reset()
     }
@@ -85,7 +94,7 @@ public class GradeView: UIView {
     }
     
     private func setupUI() {
-        scoreLabel.text = "0分"
+        scoreLabel.text = ""
         scoreLabel.textColor = .white
         scoreLabel.font = .systemFont(ofSize: 11)
         titleLabel.font = .systemFont(ofSize: 11)
